@@ -9,22 +9,22 @@ import ru.geekbrains.geekbrains_popular_libraries_kotlin.mvp.view.MainView
 
 class MainActivity : AppCompatActivity(), MainView {
 
-    private var vb: ActivityMainBinding? = null
+    private lateinit var vb: ActivityMainBinding
     val presenter by lazy { MainPresenter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         vb = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(vb?.root)
+        setContentView(vb.root)
 
         initCountBtn()
     }
 
     override fun setButtonText(index: Int, text: String) {
         when(index){
-            0 -> vb?.btnCounter1?.text = text
-            1 -> vb?.btnCounter2?.text = text
-            2 -> vb?.btnCounter3?.text = text
+            0 -> vb.btnCounter1.text = text
+            1 -> vb.btnCounter2.text = text
+            2 -> vb.btnCounter3.text = text
         }
     }
 
@@ -39,8 +39,8 @@ class MainActivity : AppCompatActivity(), MainView {
             presenter.counter3Click()
         }
 
-        vb?.btnCounter1?.setOnClickListener(counter1IsClicked)
-        vb?.btnCounter2?.setOnClickListener(counter2IsClicked)
-        vb?.btnCounter3?.setOnClickListener(counter3IsClicked)
+        vb.btnCounter1.setOnClickListener(counter1IsClicked)
+        vb.btnCounter2.setOnClickListener(counter2IsClicked)
+        vb.btnCounter3.setOnClickListener(counter3IsClicked)
     }
 }
