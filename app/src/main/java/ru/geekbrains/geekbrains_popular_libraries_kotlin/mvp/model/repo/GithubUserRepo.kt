@@ -1,5 +1,6 @@
 package ru.geekbrains.geekbrains_popular_libraries_kotlin.mvp.model.repo
 
+import io.reactivex.rxjava3.core.Observable
 import ru.geekbrains.geekbrains_popular_libraries_kotlin.mvp.model.entity.GithubUser
 
 class GithubUserRepo {
@@ -16,7 +17,9 @@ class GithubUserRepo {
         GithubUser("login10"),
     )
 
-    fun getUsers() = users
+    fun getUsers(): Observable<List<GithubUser>>{
+        return Observable.just(users)
+    }
 
     fun getLoginByIndex(i: Int): String{
         return users[i].login

@@ -36,9 +36,16 @@ class UsersPresenter(val userRepo: GithubUserRepo, val router: Router) : MvpPres
     }
 
     private fun loadData() {
-        val users = userRepo.getUsers()
         userListPresenter.users.clear()
-        userListPresenter.users.addAll(users)
+
+        userRepo.getUsers().subscribe(
+            {
+                userListPresenter.users.addAll(it)
+            },
+            {
+                it.printStackTrace()
+            }
+        )
     }
 
     fun backClick(): Boolean{
