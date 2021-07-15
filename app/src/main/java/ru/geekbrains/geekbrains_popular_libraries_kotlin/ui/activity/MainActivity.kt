@@ -1,46 +1,49 @@
 package ru.geekbrains.geekbrains_popular_libraries_kotlin.ui.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
+import com.github.terrakok.cicerone.androidx.AppNavigator
+import moxy.MvpAppCompatActivity
+import moxy.ktx.moxyPresenter
+import ru.geekbrains.geekbrains_popular_libraries_kotlin.R
 import ru.geekbrains.geekbrains_popular_libraries_kotlin.databinding.ActivityMainBinding
 import ru.geekbrains.geekbrains_popular_libraries_kotlin.mvp.presenter.MainPresenter
-import ru.geekbrains.geekbrains_popular_libraries_kotlin.mvp.view.MainView
+import ru.geekbrains.geekbrains_popular_libraries_kotlin.mvp.view.list.MainView
+import ru.geekbrains.geekbrains_popular_libraries_kotlin.ui.App
+import ru.geekbrains.geekbrains_popular_libraries_kotlin.ui.BackButtonListener
+import ru.geekbrains.geekbrains_popular_libraries_kotlin.ui.navigation.AndroidScreen
 
-class MainActivity : AppCompatActivity(), MainView {
+class MainActivity : MvpAppCompatActivity(), MainView {
+    private val navigator = AppNavigator(this, R.id.container)
 
     private var vb: ActivityMainBinding? = null
-    val presenter by lazy { MainPresenter(this) }
+
+    val presenter by moxyPresenter {
+        MainPresenter(App.instance.router, AndroidScreen())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         vb = ActivityMainBinding.inflate(layoutInflater)
         setContentView(vb?.root)
-
-        initCountBtn()
     }
 
-    override fun setButtonText(index: Int, text: String) {
-        when(index){
-            0 -> vb?.btnCounter1?.text = text
-            1 -> vb?.btnCounter2?.text = text
-            2 -> vb?.btnCounter3?.text = text
-        }
+    override fun onResumeFragments() {
+        super.onResumeFragments()
+        App.instance.navigatorHolder.setNavigator(navigator)
     }
 
-    private fun initCountBtn(){
-        val counter1IsClicked = View.OnClickListener {
-            presenter.counter1Click()
-        }
-        val counter2IsClicked = View.OnClickListener {
-            presenter.counter2Click()
-        }
-        val counter3IsClicked = View.OnClickListener {
-            presenter.counter3Click()
-        }
+    override fun onPause() {
+        super.onPause()
+        App.instance.navigatorHolder.removeNavigator()
+    }
 
-        vb?.btnCounter1?.setOnClickListener(counter1IsClicked)
-        vb?.btnCounter2?.setOnClickListener(counter2IsClicked)
-        vb?.btnCounter3?.setOnClickListener(counter3IsClicked)
+    override fun onBackPressed() {
+        super.onBackPressed()
+        supportFragmentManager.fragments.forEach{
+            if (it is BackButtonListener && it.backPressed()){
+                return
+            }
+        }
+        presenter.backClick()
     }
 }
